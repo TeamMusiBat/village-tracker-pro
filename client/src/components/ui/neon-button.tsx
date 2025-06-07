@@ -49,8 +49,33 @@ const NeonButton = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const isNeonVariant = variant?.includes('neon');
     
     if (isNeonVariant) {
-      // Separate motion props from button props
-      const { onDrag, onDragStart, onDragEnd, ...buttonProps } = props;
+      // Extract only the motion-compatible props
+      const {
+        onClick,
+        onMouseEnter,
+        onMouseLeave,
+        onFocus,
+        onBlur,
+        disabled,
+        type,
+        form,
+        name,
+        value,
+        ...restProps
+      } = props;
+      
+      const buttonProps = {
+        onClick,
+        onMouseEnter,
+        onMouseLeave,
+        onFocus,
+        onBlur,
+        disabled,
+        type,
+        form,
+        name,
+        value
+      };
       
       return (
         <motion.button

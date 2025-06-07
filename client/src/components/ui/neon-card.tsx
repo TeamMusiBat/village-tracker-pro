@@ -63,8 +63,23 @@ const NeonCard = React.forwardRef<HTMLDivElement, CardProps>(
     const isNeonVariant = variant?.includes('neon');
     
     if (animate || isNeonVariant) {
-      // Separate motion props from div props
-      const { onDrag, onDragStart, onDragEnd, ...divProps } = props;
+      // Extract only the motion-compatible props
+      const {
+        onClick,
+        onMouseEnter,
+        onMouseLeave,
+        onFocus,
+        onBlur,
+        ...restProps
+      } = props;
+      
+      const divProps = {
+        onClick,
+        onMouseEnter,
+        onMouseLeave,
+        onFocus,
+        onBlur
+      };
       
       return (
         <motion.div

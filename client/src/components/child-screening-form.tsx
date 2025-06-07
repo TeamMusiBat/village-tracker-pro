@@ -117,15 +117,15 @@ export default function ChildScreeningForm() {
   }, [muac, childForm]);
   
   // Create a screening session
-  const createScreening = async (data: ScreeningFormValues) => {
+  const createScreening = async (formData: ScreeningFormValues) => {
     setIsLoading(true);
     
     try {
       // Format text inputs
-      const formattedData = {
-        ...data,
-        villageName: formatText(data.villageName),
-        ucName: formatText(data.ucName),
+      const screeningData = {
+        ...formData,
+        villageName: formatText(formData.villageName),
+        ucName: formatText(formData.ucName),
         conductedBy: user?.fullName || '',
         designation: user?.role === 'fmt' ? 'Field Monitor' : 'Social Mobilizer',
         userId: user?.id
@@ -139,7 +139,7 @@ export default function ChildScreeningForm() {
         // Store screening data in local storage
         const pendingScreenings = JSON.parse(localStorage.getItem('pending_screenings') || '[]');
         pendingScreenings.push({
-          ...formattedData,
+          ...screeningData,
           id: tempScreeningId,
           date: new Date().toISOString()
         });
@@ -155,7 +155,7 @@ export default function ChildScreeningForm() {
       }
       
       // If online, submit to server
-      const res = await apiRequest('POST', '/api/child-screenings', formattedData);
+      const res = await apiRequest('POST', '/api/child-screenings', screeningData);
       const data = await res.json();
       
       toast({

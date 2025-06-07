@@ -1,3 +1,4 @@
+
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { useLocalStorage } from '@/hooks/use-local-storage';
 import { apiRequest } from '@/lib/queryClient';
@@ -153,10 +154,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                               currentLastLocation.longitude !== longitude;
       
       if (locationChanged) {
-        setUser((prevUser: User | null) => ({
-          ...prevUser as User,
-          lastLocation: { latitude, longitude }
-        }));
+        setUser((prevUser: User | null) => {
+          if (!prevUser) return null;
+          return {
+            ...prevUser,
+            lastLocation: { latitude, longitude }
+          };
+        });
       }
     } catch (err) {
       console.error('Failed to update location:', err);
@@ -187,26 +191,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       // Only update user state if status has changed
       if (user.isOnline !== status) {
-        setUser((prevUser: User | null) => ({
-          ...prevUser as User,
-          isOnline: status
-        }));
+        setUser((prevUser: User | null) => {
+          if (!prevUser) return null;
+          return {
+            ...prevUser,
+            isOnline: status
+          };
+        });
       }
     } catch (err) {
       console.error('Failed to update online status:', err);
     }
   };
-  
-  // Update online status when it changes
-  // Disabled temporarily to fix the maximum update depth error
-  // Will re-implement with a more robust approach later
-  /*
-  useEffect(() => {
-    if (user && prevStatusRef.current !== isOnline) {
-      setOnlineStatus(isOnline);
-    }
-  }, [isOnline]);
-  */
 
   return (
     <AuthContext.Provider value={{ user, isLoading, error, login, logout, updateUserLocation, setOnlineStatus }}>

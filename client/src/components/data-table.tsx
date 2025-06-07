@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import {
   ColumnDef,
@@ -31,7 +30,7 @@ interface DataTableProps<TData, TValue> {
   onExport?: () => void;
 }
 
-export function DataTable<TData, TValue>({
+export default function DataTable<TData, TValue>({
   columns,
   data,
   searchKey,
@@ -151,3 +150,5 @@ export function DataTable<TData, TValue>({
     </div>
   );
 }
+
+export { DataTable };

@@ -52,3 +52,27 @@ export function formatDateForInput(date: Date | string | null): string {
   
   return d.toISOString().split('T')[0];
 }
+
+export function formatDate(date: Date | string | null): string {
+  if (!date) return '';
+  
+  const d = typeof date === 'string' ? new Date(date) : date;
+  if (isNaN(d.getTime())) return '';
+  
+  return d.toLocaleDateString();
+}
+
+export function getNutritionStatus(muac: number): 'Normal' | 'MAM' | 'SAM' {
+  if (muac < 11.5) return 'SAM';
+  if (muac >= 11.5 && muac < 12.5) return 'MAM';
+  return 'Normal';
+}
+
+export function getSidebarItemClass(isActive: boolean): string {
+  return cn(
+    "flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors",
+    isActive 
+      ? "bg-primary text-primary-foreground" 
+      : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+  );
+}

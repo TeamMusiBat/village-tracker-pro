@@ -1,252 +1,136 @@
-import { mysqlTable, int, varchar, text, boolean, datetime, decimal, json, mysqlEnum } from "drizzle-orm/mysql-core";
-import { createInsertSchema } from "drizzle-zod";
-import { z } from "zod";
 
-// User Management
-export const users = mysqlTable("users", {
-  id: int("id").primaryKey().autoincrement(),
-  username: varchar("username", { length: 50 }).notNull().unique(),
-  password: varchar("password", { length: 255 }).notNull(),
-  name: varchar("name", { length: 100 }).notNull(),
-  role: mysqlEnum("role", ['developer', 'master', 'fmt', 'sm']).notNull(),
-  email: varchar("email", { length: 100 }),
-  isOnline: boolean("is_online").default(false),
-  lastActive: datetime("last_active"),
-  createdAt: datetime("created_at").default(new Date()),
-  updatedAt: datetime("updated_at").default(new Date())
+import { z } from 'zod';
+
+// User Schema
+export const insertUserSchema = z.object({
+  username: z.string().min(1, 'Username is required'),
+  password: z.string().min(6, 'Password must be at least 6 characters'),
+  name: z.string().min(1, 'Name is required'),
+  role: z.enum(['developer', 'master', 'fmt', 'sm']),
+  email: z.string().email().nullable()
 });
 
-export const insertUserSchema = createInsertSchema(users, {
-  role: z.enum(["developer", "master", "fmt", "sm"])
-}).omit({
-  id: true,
-  isOnline: true,
-  lastActive: true,
-  createdAt: true,
-  updatedAt: true
+export const userSchema = insertUserSchema.extend({
+  id: z.number(),
+  isOnline: z.boolean().nullable(),
+  lastActive: z.date().nullable(),
+  createdAt: z.date().nullable(),
+  updatedAt: z.date().nullable()
 });
 
-// User Locations
-export const userLocations = mysqlTable("user_locations", {
-  id: int("id").primaryKey().autoincrement(),
-  userId: int("user_id").notNull(),
-  latitude: decimal("latitude", { precision: 10, scale: 8 }).notNull(),
-  longitude: decimal("longitude", { precision: 11, scale: 8 }).notNull(),
-  timestamp: datetime("timestamp").default(new Date())
-});
-
-// Awareness Sessions
-export const awarenessSessions = mysqlTable("awareness_sessions", {
-  id: int("id").primaryKey().autoincrement(),
-  title: varchar("title", { length: 255 }).notNull(),
-  location: varchar("location", { length: 255 }).notNull(),
-  sessionDate: datetime("session_date").notNull(),
-  sessionNumber: varchar("session_number", { length: 50 }),
-  targetGroup: varchar("target_group", { length: 100 }),
-  createdBy: int("created_by").notNull(),
-  latitude: decimal("latitude", { precision: 10, scale: 8 }),
-  longitude: decimal("longitude", { precision: 11, scale: 8 }),
-  images: text("images"),
-  createdAt: datetime("created_at").default(new Date())
-});
-
-export const insertAwarenessSessionSchema = createInsertSchema(awarenessSessions).omit({
-  id: true,
-  createdAt: true
-});
-
-// Attendees for Awareness Sessions
-export const attendees = mysqlTable("attendees", {
-  id: int("id").primaryKey().autoincrement(),
-  sessionId: int("session_id").notNull(),
-  name: varchar("name", { length: 100 }).notNull(),
-  fatherOrHusbandName: varchar("father_or_husband_name", { length: 100 }).notNull(),
-  gender: mysqlEnum("gender", ["Male", "Female"]),
-  ageYears: int("age_years"),
-  dateOfBirth: datetime("date_of_birth"),
-  childrenUnderFive: int("children_under_five"),
-  vaccinationStatus: varchar("vaccination_status", { length: 50 }),
-  vaccineDue: boolean("vaccine_due"),
-  vaccineCardImage: text("vaccine_card_image"),
-  contactNumber: varchar("contact_number", { length: 20 }),
-  remarks: text("remarks"),
-  images: text("images"),
-  createdAt: datetime("created_at").default(new Date())
-});
-
-export const insertAttendeeSchema = createInsertSchema(attendees, {
-  gender: z.enum(["Male", "Female"]).optional()
-}).omit({
-  id: true,
-  createdAt: true
-});
-
-// Child Screening
-export const childScreenings = mysqlTable("child_screenings", {
-  id: int("id").primaryKey().autoincrement(),
-  title: varchar("title", { length: 255 }).notNull(),
-  location: varchar("location", { length: 255 }).notNull(),
-  screeningDate: datetime("screening_date").notNull(),
-  createdBy: int("created_by").notNull(),
-  latitude: decimal("latitude", { precision: 10, scale: 8 }),
-  longitude: decimal("longitude", { precision: 11, scale: 8 }),
-  images: text("images"),
-  createdAt: datetime("created_at").default(new Date())
-});
-
-export const insertChildScreeningSchema = createInsertSchema(childScreenings).omit({
-  id: true,
-  createdAt: true
-});
-
-// Screened Children
-export const screenedChildren = mysqlTable("screened_children", {
-  id: int("id").primaryKey().autoincrement(),
-  screeningId: int("screening_id").notNull(),
-  childName: varchar("child_name", { length: 100 }).notNull(),
-  fatherName: varchar("father_name", { length: 100 }).notNull(),
-  gender: mysqlEnum("gender", ["Male", "Female"]).notNull(),
-  dateOfBirth: datetime("date_of_birth"),
-  ageMonths: int("age_months"),
-  height: decimal("height", { precision: 5, scale: 2 }),
-  weight: decimal("weight", { precision: 5, scale: 2 }),
-  muac: decimal("muac", { precision: 5, scale: 2 }),
-  nutritionStatus: mysqlEnum("nutrition_status", ["Normal", "MAM", "SAM"]).notNull(),
-  referred: boolean("referred").default(false),
-  images: text("images"),
-  createdAt: datetime("created_at").default(new Date())
-});
-
-export const insertScreenedChildSchema = createInsertSchema(screenedChildren, {
-  gender: z.enum(["Male", "Female"]),
-  nutritionStatus: z.enum(["Normal", "MAM", "SAM"])
-}).omit({
-  id: true,
-  createdAt: true
-});
-
-// Blogs
-export const blogs = mysqlTable("blogs", {
-  id: int("id").primaryKey().autoincrement(),
-  title: varchar("title", { length: 255 }).notNull(),
-  content: text("content").notNull(),
-  authorId: int("author_id").notNull(),
-  imageUrl: text("image_url"),
-  published: boolean("published").default(true),
-  createdAt: datetime("created_at").default(new Date()),
-  updatedAt: datetime("updated_at").default(new Date())
-});
-
-export const insertBlogSchema = createInsertSchema(blogs).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true
-});
-
-// Pending Sync Items
-export const pendingSyncItems = mysqlTable("pending_sync_items", {
-  id: int("id").primaryKey().autoincrement(),
-  userId: int("user_id").notNull(),
-  entityType: varchar("entity_type", { length: 50 }).notNull(),
-  entityData: json("entity_data").notNull(),
-  synced: boolean("synced").default(false),
-  createdAt: datetime("created_at").default(new Date()),
-  syncedAt: datetime("synced_at")
-});
-
-// Type Definitions
-export interface User {
-  id: number;
-  username: string;
-  password: string;
-  name: string;
-  role: "developer" | "master" | "fmt" | "sm";
-  email: string | null;
-  isOnline: boolean | null;
-  lastActive: Date | null;
-  createdAt: Date | null;
-  updatedAt: Date | null;
-}
-
-export interface AwarenessSession {
-  id: number;
-  title: string;
-  location: string;
-  sessionDate: Date;
-  sessionNumber: string | null;
-  targetGroup: string | null;
-  createdBy: number;
-  creatorName?: string; // Joined field - not stored in database
-  latitude: number | null;
-  longitude: number | null;
-  images: string[] | null;
-  createdAt: Date | null;
-}
-
-export interface Attendee {
-  id: number;
-  sessionId: number;
-  name: string;
-  fatherOrHusbandName: string;
-  gender: "Male" | "Female" | null;
-  ageYears: number | null;
-  dateOfBirth: Date | null;
-  childrenUnderFive: number | null;
-  vaccinationStatus: string | null;
-  vaccineDue: boolean | null;
-  vaccineCardImage: string | null;
-  contactNumber: string | null;
-  remarks: string | null;
-  images: string[] | null;
-  createdAt: Date | null;
-}
-
-export interface ChildScreening {
-  id: number;
-  title: string;
-  location: string;
-  screeningDate: Date;
-  createdBy: number;
-  creatorName?: string; // Joined field - not stored in database
-  latitude: number | null;
-  longitude: number | null;
-  images: string[] | null;
-  createdAt: Date | null;
-}
-
-export interface ScreenedChild {
-  id: number;
-  screeningId: number;
-  childName: string;
-  fatherName: string;
-  gender: "Male" | "Female";
-  dateOfBirth: Date | null;
-  ageMonths: number | null;
-  height: number | null;
-  weight: number | null;
-  muac: number | null;
-  nutritionStatus: "Normal" | "MAM" | "SAM";
-  referred: boolean | null;
-  images: string[] | null;
-  createdAt: Date | null;
-}
-
-export interface Blog {
-  id: number;
-  title: string;
-  content: string;
-  authorId: number;
-  authorName?: string; // Joined field - not stored in database
-  imageUrl: string | null;
-  published: boolean | null;
-  createdAt: Date | null;
-  updatedAt: Date | null;
-}
-
-// Export Types
 export type InsertUser = z.infer<typeof insertUserSchema>;
+export type User = z.infer<typeof userSchema> & {
+  fullName: string; // Add computed property for components
+  lastLocation?: {
+    latitude: number;
+    longitude: number;
+  };
+};
+
+// Awareness Session Schema
+export const insertAwarenessSessionSchema = z.object({
+  villageName: z.string().min(1, 'Village name is required'),
+  ucName: z.string().min(1, 'UC name is required'),
+  sessionDate: z.date().default(() => new Date()),
+  conductedBy: z.string().min(1, 'Conducted by is required'),
+  designation: z.string().optional(),
+  userId: z.number().optional(),
+  latitude: z.number().nullable(),
+  longitude: z.number().nullable()
+});
+
+export const awarenessSessionSchema = insertAwarenessSessionSchema.extend({
+  id: z.number(),
+  createdAt: z.date().nullable()
+});
+
 export type InsertAwarenessSession = z.infer<typeof insertAwarenessSessionSchema>;
+export type AwarenessSession = z.infer<typeof awarenessSessionSchema>;
+
+// Attendee Schema
+export const insertAttendeeSchema = z.object({
+  sessionId: z.number(),
+  name: z.string().min(1, 'Name is required'),
+  fatherOrHusbandName: z.string().min(1, 'Father/Husband name is required'),
+  ageYears: z.number().nullable(),
+  dateOfBirth: z.string().optional(),
+  gender: z.enum(['Male', 'Female']).default('Male'),
+  childrenUnderFive: z.number().int().min(0).nullable(),
+  contactNumber: z.string().optional(),
+  remarks: z.string().optional(),
+  vaccinationStatus: z.string().optional(),
+  vaccineDue: z.boolean().default(false),
+  vaccineCardImage: z.string().optional(),
+  belongsToSameAddress: z.boolean().default(false),
+  images: z.array(z.string()).default([])
+});
+
+export const attendeeSchema = insertAttendeeSchema.extend({
+  id: z.number(),
+  createdAt: z.date().nullable()
+});
+
 export type InsertAttendee = z.infer<typeof insertAttendeeSchema>;
+export type Attendee = z.infer<typeof attendeeSchema>;
+
+// Child Screening Schema
+export const insertChildScreeningSchema = z.object({
+  villageName: z.string().min(1, 'Village name is required'),
+  ucName: z.string().min(1, 'UC name is required'),
+  screeningDate: z.date().default(() => new Date()),
+  conductedBy: z.string().min(1, 'Conducted by is required'),
+  designation: z.string().optional(),
+  userId: z.number().optional(),
+  latitude: z.number().nullable(),
+  longitude: z.number().nullable()
+});
+
+export const childScreeningSchema = insertChildScreeningSchema.extend({
+  id: z.number(),
+  createdAt: z.date().nullable()
+});
+
 export type InsertChildScreening = z.infer<typeof insertChildScreeningSchema>;
+export type ChildScreening = z.infer<typeof childScreeningSchema>;
+
+// Screened Child Schema
+export const insertScreenedChildSchema = z.object({
+  screeningId: z.number(),
+  childName: z.string().min(1, 'Child name is required'),
+  fatherName: z.string().min(1, 'Father name is required'),
+  age: z.number().min(0, 'Age must be positive'),
+  gender: z.enum(['Male', 'Female']).default('Male'),
+  weight: z.number().min(0, 'Weight must be positive'),
+  height: z.number().min(0, 'Height must be positive'),
+  muac: z.number().min(0, 'MUAC must be positive').nullable(),
+  nutritionStatus: z.enum(['Normal', 'MAM', 'SAM']),
+  referred: z.boolean().default(false),
+  remarks: z.string().optional()
+});
+
+export const screenedChildSchema = insertScreenedChildSchema.extend({
+  id: z.number(),
+  createdAt: z.date().nullable()
+});
+
 export type InsertScreenedChild = z.infer<typeof insertScreenedChildSchema>;
+export type ScreenedChild = z.infer<typeof screenedChildSchema>;
+
+// Blog Schema
+export const insertBlogSchema = z.object({
+  title: z.string().min(1, 'Title is required'),
+  content: z.string().min(1, 'Content is required'),
+  authorId: z.number(),
+  author: z.string().optional(),
+  imageUrl: z.string().optional(),
+  publishedAt: z.date().nullable()
+});
+
+export const blogSchema = insertBlogSchema.extend({
+  id: z.number(),
+  createdAt: z.date().nullable(),
+  updatedAt: z.date().nullable()
+});
+
 export type InsertBlog = z.infer<typeof insertBlogSchema>;
+export type Blog = z.infer<typeof blogSchema>;

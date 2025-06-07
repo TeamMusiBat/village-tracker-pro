@@ -74,7 +74,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser(userData);
       toast({
         title: "Login Successful",
-        description: `Welcome back, ${userData.fullName}!`,
+        description: `Welcome back, ${userData.fullName || userData.name}!`,
       });
     } catch (err: any) {
       console.error('Login error:', err);
@@ -147,13 +147,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
       
       // Update local user data with new location, but don't trigger state update if similar
-      const currentLastLocation = user.lastLocation as any;
+      const currentLastLocation = user.lastLocation;
       const locationChanged = !currentLastLocation || 
                               currentLastLocation.latitude !== latitude || 
                               currentLastLocation.longitude !== longitude;
       
       if (locationChanged) {
-        setUser(prevUser => ({
+        setUser((prevUser: User | null) => ({
           ...prevUser as User,
           lastLocation: { latitude, longitude }
         }));
@@ -187,7 +187,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       // Only update user state if status has changed
       if (user.isOnline !== status) {
-        setUser(prevUser => ({
+        setUser((prevUser: User | null) => ({
           ...prevUser as User,
           isOnline: status
         }));

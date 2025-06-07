@@ -1,4 +1,3 @@
-
 import fs from 'fs';
 import path from 'path';
 import bcrypt from 'bcryptjs';
@@ -67,6 +66,7 @@ export class JsonStorage implements IStorage {
           username: 'admin',
           password: bcrypt.hashSync('admin123', 10),
           name: 'Administrator',
+          fullName: 'Administrator',
           role: 'developer',
           email: 'admin@track4health.com',
           isOnline: false,
@@ -79,6 +79,7 @@ export class JsonStorage implements IStorage {
           username: 'user',
           password: bcrypt.hashSync('user123', 10),
           name: 'Field Worker',
+          fullName: 'Field Worker',
           role: 'fmt',
           email: 'user@track4health.com',
           isOnline: false,
@@ -94,12 +95,20 @@ export class JsonStorage implements IStorage {
   // User Management
   async getUser(id: number): Promise<User | undefined> {
     const users = readJsonFile<User>(USERS_FILE);
-    return users.find(user => user.id === id);
+    const user = users.find(user => user.id === id);
+    if (user && !user.fullName) {
+      user.fullName = user.name; // Ensure fullName exists
+    }
+    return user;
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
     const users = readJsonFile<User>(USERS_FILE);
-    return users.find(user => user.username === username);
+    const user = users.find(user => user.username === username);
+    if (user && !user.fullName) {
+      user.fullName = user.name; // Ensure fullName exists
+    }
+    return user;
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
@@ -110,6 +119,7 @@ export class JsonStorage implements IStorage {
       ...insertUser,
       id: getNextId(users),
       password: hashedPassword,
+      fullName: insertUser.name,
       isOnline: false,
       createdAt: new Date(),
       updatedAt: new Date()
@@ -121,7 +131,11 @@ export class JsonStorage implements IStorage {
   }
 
   async getAllUsers(): Promise<User[]> {
-    return readJsonFile<User>(USERS_FILE);
+    const users = readJsonFile<User>(USERS_FILE);
+    return users.map(user => ({
+      ...user,
+      fullName: user.fullName || user.name
+    }));
   }
 
   async getOnlineUsers(): Promise<User[]> {

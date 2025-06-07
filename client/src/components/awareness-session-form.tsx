@@ -7,7 +7,6 @@ import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
 import { queryClient } from '@/lib/queryClient';
 import { formatText, isValidDateFormat } from '@/lib/text-formatter';
-import { isDuplicateRecord } from '@/lib/text-formatter';
 import { useOnlineStatus } from '@/hooks/use-online-status';
 import { useLocalStorage } from '@/hooks/use-local-storage';
 
@@ -129,7 +128,7 @@ export default function AwarenessSessionForm() {
         ...data,
         villageName: formatText(data.villageName),
         ucName: formatText(data.ucName),
-        conductedBy: user?.fullName || '',
+        conductedBy: user?.fullName || user?.name || '',
         designation: user?.role === 'fmt' ? 'Field Monitor' : 'Social Mobilizer',
         userId: user?.id
       };
@@ -369,7 +368,7 @@ export default function AwarenessSessionForm() {
                 <FormItem>
                   <FormLabel>Conducted By</FormLabel>
                   <Input
-                    value={user?.fullName || ''}
+                    value={user?.fullName || user?.name || ''}
                     disabled
                   />
                 </FormItem>

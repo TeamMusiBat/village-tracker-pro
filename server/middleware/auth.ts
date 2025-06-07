@@ -1,5 +1,6 @@
+
 import { Request, Response, NextFunction } from "express";
-import { storage } from "../storage";
+import { storage } from "../index";
 import { User } from "@shared/schema";
 import session from "express-session";
 

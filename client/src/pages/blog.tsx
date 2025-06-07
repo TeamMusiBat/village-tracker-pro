@@ -1,7 +1,9 @@
+
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'wouter';
 import { formatDate } from '@/lib/utils';
+import type { Blog } from '@shared/schema';
 
 import {
   Card,
@@ -20,7 +22,7 @@ export default function Blog() {
   const { user } = useAuth();
   
   // Fetch blogs
-  const { data: blogs, isLoading } = useQuery({
+  const { data: blogs, isLoading } = useQuery<Blog[]>({
     queryKey: ['/api/blogs']
   });
 
@@ -38,9 +40,11 @@ export default function Blog() {
         </div>
         
         {canCreateBlog && (
-          <Button as={Link} href="/blog/new">
-            <Plus className="mr-2 h-4 w-4" />
-            Create Blog
+          <Button asChild>
+            <Link href="/blog/new">
+              <Plus className="mr-2 h-4 w-4" />
+              Create Blog
+            </Link>
           </Button>
         )}
       </div>
@@ -66,7 +70,7 @@ export default function Blog() {
         </div>
       ) : blogs && blogs.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {blogs.map((blog: any) => (
+          {blogs.map((blog: Blog) => (
             <Card key={blog.id} className="overflow-hidden flex flex-col">
               {blog.imageUrl && (
                 <div className="aspect-video w-full overflow-hidden">
@@ -80,19 +84,19 @@ export default function Blog() {
               <CardHeader>
                 <div className="flex justify-between items-start">
                   <CardTitle className="text-xl">{blog.title}</CardTitle>
-                  {!blog.isPublished && (
+                  {!blog.publishedAt && (
                     <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">
                       Draft
                     </Badge>
                   )}
                 </div>
                 <CardDescription>
-                  By {blog.author.fullName} • {formatDate(blog.publishedAt || blog.createdAt)}
+                  By {blog.author || 'Unknown'} • {formatDate(blog.publishedAt || blog.createdAt)}
                 </CardDescription>
               </CardHeader>
               <CardContent className="flex-grow">
                 <p className="text-gray-600 dark:text-gray-300 line-clamp-3">
-                  {blog.excerpt || blog.content.substring(0, 150) + '...'}
+                  {blog.content.substring(0, 150) + '...'}
                 </p>
               </CardContent>
               <CardFooter className="flex justify-between pt-0">

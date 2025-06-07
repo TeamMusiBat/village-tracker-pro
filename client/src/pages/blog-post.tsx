@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useRoute, Link } from 'wouter';
 import { formatDate } from '@/lib/utils';
 import { useAuth } from '@/contexts/auth-context';
+import type { Blog, User } from '@shared/schema';
 
 import {
   Card,
@@ -12,7 +13,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, Edit, Calendar, User } from 'lucide-react';
+import { ChevronLeft, Edit, Calendar, User as UserIcon } from 'lucide-react';
 import UserAvatar from '@/components/user-avatar';
 
 export default function BlogPost() {
@@ -21,15 +22,15 @@ export default function BlogPost() {
   const blogId = params?.id;
 
   // Fetch blog
-  const { data: blog, isLoading, error } = useQuery({
+  const { data: blog, isLoading, error } = useQuery<Blog & { author: User }>({
     queryKey: [`/api/blogs/${blogId}`],
     enabled: !!blogId
   });
 
   // Check if user can edit this blog
-  const canEditBlog = user && (
+  const canEditBlog = user && blog && (
     ['developer', 'master'].includes(user.role) || 
-    (blog && user.id === blog.authorId)
+    user.id === blog.authorId
   );
 
   if (isLoading) {
@@ -97,14 +98,14 @@ export default function BlogPost() {
         <div className="flex items-center mb-8 text-sm text-gray-600 dark:text-gray-400">
           <div className="flex items-center">
             <Calendar className="h-4 w-4 mr-1" />
-            <time dateTime={blog.publishedAt || blog.createdAt}>
+            <time dateTime={blog.publishedAt?.toISOString() || blog.createdAt?.toISOString()}>
               {formatDate(blog.publishedAt || blog.createdAt)}
             </time>
           </div>
           <span className="mx-2">•</span>
           <div className="flex items-center">
-            <User className="h-4 w-4 mr-1" />
-            <span>By {blog.author.fullName}</span>
+            <UserIcon className="h-4 w-4 mr-1" />
+            <span>By {blog.author?.fullName || blog.author?.name || 'Unknown Author'}</span>
           </div>
           
           {canEditBlog && (
@@ -141,15 +142,15 @@ export default function BlogPost() {
           />
           <div>
             <h3 className="font-medium text-gray-900 dark:text-white">
-              {blog.author.fullName}
+              {blog.author?.fullName || blog.author?.name || 'Unknown Author'}
             </h3>
             <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">
-              {blog.author.role === 'developer' ? 'Administrator' : 
-               blog.author.role === 'master' ? 'Supervisor' : 
-               blog.author.role === 'fmt' ? 'Field Monitor' : 'Social Mobilizer'}
+              {blog.author?.role === 'developer' ? 'Administrator' : 
+               blog.author?.role === 'master' ? 'Supervisor' : 
+               blog.author?.role === 'fmt' ? 'Field Monitor' : 'Social Mobilizer'}
             </p>
             <p className="text-gray-600 dark:text-gray-300">
-              {blog.author.bio || `${blog.author.fullName} is a health professional working to improve community health outcomes through the Track4Health program.`}
+              {`${blog.author?.fullName || blog.author?.name || 'Unknown Author'} is a health professional working to improve community health outcomes through the Track4Health program.`}
             </p>
           </div>
         </div>

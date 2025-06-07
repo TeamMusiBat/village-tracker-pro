@@ -1,8 +1,10 @@
+
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/contexts/auth-context';
 import { useToast } from '@/hooks/use-toast';
 import { getRoleLabel } from '@/lib/utils';
+import type { User } from '@shared/schema';
 
 import {
   Card,
@@ -32,10 +34,10 @@ export default function UserManagement() {
   const { toast } = useToast();
   const [isAddUserDialogOpen, setIsAddUserDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<any>(null);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
   // Fetch users
-  const { data: users, isLoading } = useQuery({
+  const { data: users, isLoading } = useQuery<User[]>({
     queryKey: ['/api/users'],
     enabled: !!user && ['developer', 'master'].includes(user.role)
   });
@@ -52,7 +54,7 @@ export default function UserManagement() {
       
       toast({
         title: "User deleted",
-        description: `${selectedUser.fullName} has been removed.`,
+        description: `${selectedUser.fullName || selectedUser.name} has been removed.`,
       });
       
       setSelectedUser(null);
@@ -71,12 +73,12 @@ export default function UserManagement() {
     
     // If developer, show all users except developer
     if (user?.role === 'developer') {
-      return users.filter((u: any) => u.id !== user.id);
+      return users.filter((u: User) => u.id !== user.id);
     }
     
     // If master, show only FMT and SM
     if (user?.role === 'master') {
-      return users.filter((u: any) => ['fmt', 'sm'].includes(u.role));
+      return users.filter((u: User) => ['fmt', 'sm'].includes(u.role));
     }
     
     return [];
@@ -122,7 +124,7 @@ export default function UserManagement() {
             </div>
           ) : filteredUsers.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {filteredUsers.map((userData: any) => (
+              {filteredUsers.map((userData: User) => (
                 <Card key={userData.id} className="overflow-hidden">
                   <CardContent className="p-0">
                     <div className="p-4 flex justify-between items-start">
@@ -135,7 +137,7 @@ export default function UserManagement() {
                         />
                         <div>
                           <h3 className="font-medium text-gray-900 dark:text-white">
-                            {userData.fullName}
+                            {userData.fullName || userData.name}
                           </h3>
                           <p className="text-sm text-gray-500 dark:text-gray-400">
                             {getRoleLabel(userData.role)}
@@ -165,12 +167,6 @@ export default function UserManagement() {
                     <div className="bg-gray-50 dark:bg-gray-800 p-4 border-t border-gray-200 dark:border-gray-700">
                       <div className="grid grid-cols-2 gap-4 text-sm">
                         <div>
-                          <p className="text-gray-500 dark:text-gray-400">District</p>
-                          <p className="font-medium text-gray-900 dark:text-white">
-                            {userData.district || 'Not specified'}
-                          </p>
-                        </div>
-                        <div>
                           <p className="text-gray-500 dark:text-gray-400">Status</p>
                           <p className="font-medium text-gray-900 dark:text-white">
                             {userData.isOnline ? 
@@ -185,15 +181,6 @@ export default function UserManagement() {
                             <p className="text-gray-500 dark:text-gray-400">Email</p>
                             <p className="font-medium text-gray-900 dark:text-white">
                               {userData.email}
-                            </p>
-                          </div>
-                        )}
-                        
-                        {userData.phoneNumber && (
-                          <div className="col-span-2">
-                            <p className="text-gray-500 dark:text-gray-400">Phone</p>
-                            <p className="font-medium text-gray-900 dark:text-white">
-                              {userData.phoneNumber}
                             </p>
                           </div>
                         )}
@@ -242,10 +229,9 @@ export default function UserManagement() {
         onClose={() => setIsDeleteDialogOpen(false)}
         onConfirm={handleDeleteUser}
         title="Delete User"
-        description={`Are you sure you want to delete ${selectedUser?.fullName}? This action cannot be undone.`}
+        description={`Are you sure you want to delete ${selectedUser?.fullName || selectedUser?.name}? This action cannot be undone.`}
         confirmText="Delete"
         cancelText="Cancel"
-        variant="danger"
       />
     </div>
   );

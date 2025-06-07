@@ -17,6 +17,12 @@ export interface BlogsResponse {
   blogs: Blog[];
 }
 
+export interface BlogResponse {
+  blog: Blog & {
+    author: User;
+  };
+}
+
 export interface UsersResponse {
   users: User[];
 }

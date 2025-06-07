@@ -121,6 +121,7 @@ export class JsonStorage implements IStorage {
       password: hashedPassword,
       fullName: insertUser.name,
       isOnline: false,
+      lastActive: null,
       createdAt: new Date(),
       updatedAt: new Date()
     };

@@ -1,9 +1,11 @@
+
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/contexts/auth-context';
 import { useToast } from '@/hooks/use-toast';
 import { formatDate } from '@/lib/utils';
 import { useOnlineStatus } from '@/hooks/use-online-status';
+import type { ChildScreeningsResponse } from '@/types/api';
 
 import {
   Card,
@@ -12,13 +14,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { FileDown, Plus } from 'lucide-react';
 import ChildScreeningForm from '@/components/child-screening-form-new';
-import StatusPill from '@/components/status-pill';
-import DataTable from '@/components/data-table';
 import ExportDataModal from '@/components/export-data-modal';
 import { downloadExportData, prepareChildScreeningsForExport } from '@/lib/export-to-excel';
 
@@ -30,7 +29,7 @@ export default function ChildScreening() {
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
 
   // Fetch screenings data
-  const { data: screeningsData, isLoading } = useQuery({
+  const { data: screeningsData, isLoading } = useQuery<ChildScreeningsResponse>({
     queryKey: ['/api/child-screenings'],
     enabled: activeTab === "list" && !!user
   });
@@ -40,7 +39,7 @@ export default function ChildScreening() {
     // Prepare mock data for export
     const exportData = prepareChildScreeningsForExport(
       screeningsData?.screenings || [],
-      screeningsData?.children || [],
+      screeningsData?.children ? Object.values(screeningsData.children).flat() : [],
       options
     );
     
@@ -53,90 +52,6 @@ export default function ChildScreening() {
     });
   };
 
-  // Set up columns for the data table
-  const columns = [
-    {
-      accessorKey: "date",
-      header: "Date",
-      cell: ({ row }: any) => formatDate(row.original.date),
-    },
-    {
-      accessorKey: "villageName",
-      header: "Village",
-    },
-    {
-      accessorKey: "ucName",
-      header: "UC Name",
-    },
-    {
-      accessorKey: "conductedBy",
-      header: "Conducted By",
-    },
-    {
-      accessorKey: "childrenCount",
-      header: "Children Screened",
-    },
-    {
-      accessorKey: "stats",
-      header: "Nutrition Status",
-      cell: ({ row }: any) => {
-        const stats = row.original.stats || { normal: 0, mam: 0, sam: 0 };
-        return (
-          <div className="flex space-x-1">
-            <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
-              Normal: {stats.normal || 0}
-            </Badge>
-            <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">
-              MAM: {stats.mam || 0}
-            </Badge>
-            <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">
-              SAM: {stats.sam || 0}
-            </Badge>
-          </div>
-        );
-      },
-    },
-    {
-      id: "actions",
-      header: "Actions",
-      cell: ({ row }: any) => (
-        <div className="space-x-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => {
-              // View details
-              toast({
-                title: "Viewing Screening Details",
-                description: `Viewing details for screening in ${row.original.villageName}`,
-              });
-            }}
-          >
-            View
-          </Button>
-          
-          {user && ['developer', 'master'].includes(user.role) && (
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
-              onClick={() => {
-                // Delete screening
-                toast({
-                  variant: "destructive",
-                  title: "Delete Screening",
-                  description: "This feature is not yet implemented.",
-                });
-              }}
-            >
-              Delete
-            </Button>
-          )}
-        </div>
-      ),
-    },
-  ];
-
   // Define the table columns for child screening
   const tableColumns = [
     {
@@ -144,7 +59,7 @@ export default function ChildScreening() {
       header: "NAME",
       cell: ({ row }: any) => {
         const child = row?.original || {};
-        return child.name || 'N/A';
+        return child.childName || 'N/A';
       }
     },
     {
@@ -168,7 +83,7 @@ export default function ChildScreening() {
       header: "AGE",
       cell: ({ row }: any) => {
         const child = row?.original || {};
-        return child.ageMonths ? `${child.ageMonths} months` : 'N/A';
+        return child.age ? `${child.age} months` : 'N/A';
       }
     },
     {
@@ -184,7 +99,7 @@ export default function ChildScreening() {
       header: "STATUS",
       cell: ({ row }: any) => {
         const child = row?.original || {};
-        const status = child.status || 'Unknown';
+        const status = child.nutritionStatus || 'Unknown';
         
         let colorClass = "";
         if (status === 'Normal') {
@@ -228,56 +143,56 @@ export default function ChildScreening() {
     }
   ];
 
-  // Mock data for children stats
+  // Mock data for children stats (since real data structure isn't implemented yet)
   const mockStats = {
     sam: 1,
     mam: 1,
     normal: 2
   };
 
-  // Mock data for children
+  // Mock data for children (since real data structure isn't implemented yet)
   const mockChildren = [
     { 
       id: 1, 
-      name: 'Ali Khan', 
+      childName: 'Ali Khan', 
       fatherName: 'Noor Khan', 
       village: 'Shah Zaman', 
-      ageMonths: 6, 
+      age: 6, 
       muac: 12.5, 
-      status: 'Normal', 
+      nutritionStatus: 'Normal', 
       vaccinationStatus: '0-Dose',
       isUnderVaccinationAge: false
     },
     { 
       id: 2, 
-      name: 'Ali Gul', 
+      childName: 'Ali Gul', 
       fatherName: 'Noor Hasan', 
       village: 'Mitha Khan Jamali', 
-      ageMonths: 36, 
+      age: 36, 
       muac: 12.2, 
-      status: 'MAM', 
+      nutritionStatus: 'MAM', 
       vaccinationStatus: 'Completed',
       isUnderVaccinationAge: false
     },
     { 
       id: 3, 
-      name: 'Shahzia', 
+      childName: 'Shahzia', 
       fatherName: 'Khan Muhammad', 
       village: 'Mitha Khan Jamali', 
-      ageMonths: 48, 
+      age: 48, 
       muac: 13.2, 
-      status: 'Normal', 
+      nutritionStatus: 'Normal', 
       vaccinationStatus: '0-Dose',
       isUnderVaccinationAge: true
     },
     { 
       id: 4, 
-      name: 'Shahzaib', 
+      childName: 'Shahzaib', 
       fatherName: 'Nabi Bux', 
       village: 'Village Janan Jamali', 
-      ageMonths: 36, 
+      age: 36, 
       muac: 11.2, 
-      status: 'SAM', 
+      nutritionStatus: 'SAM', 
       vaccinationStatus: 'Completed',
       isUnderVaccinationAge: false
     }
@@ -392,11 +307,11 @@ export default function ChildScreening() {
                 {mockChildren.map((child, index) => {
                   // Add different background colors based on status
                   let rowClass = "";
-                  if (child.status === 'Normal') {
+                  if (child.nutritionStatus === 'Normal') {
                     rowClass = "bg-green-50/50";
-                  } else if (child.status === 'MAM') {
+                  } else if (child.nutritionStatus === 'MAM') {
                     rowClass = "bg-yellow-50/50";
-                  } else if (child.status === 'SAM') {
+                  } else if (child.nutritionStatus === 'SAM') {
                     rowClass = "bg-red-50/50";
                   }
                   
@@ -421,11 +336,11 @@ export default function ChildScreening() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {mockChildren.map((child) => {
             let cardClass = "border";
-            if (child.status === 'Normal') {
+            if (child.nutritionStatus === 'Normal') {
               cardClass = "border-green-200 bg-green-50";
-            } else if (child.status === 'MAM') {
+            } else if (child.nutritionStatus === 'MAM') {
               cardClass = "border-yellow-200 bg-yellow-50";
-            } else if (child.status === 'SAM') {
+            } else if (child.nutritionStatus === 'SAM') {
               cardClass = "border-red-200 bg-red-50";
             }
             
@@ -433,13 +348,13 @@ export default function ChildScreening() {
               <div key={child.id} className={`rounded-lg overflow-hidden ${cardClass}`}>
                 <div className="p-4">
                   <div className="flex justify-between items-start mb-2">
-                    <h3 className="text-lg font-semibold">{child.name}</h3>
+                    <h3 className="text-lg font-semibold">{child.childName}</h3>
                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                      child.status === 'Normal' ? "bg-green-500 text-white" :
-                      child.status === 'MAM' ? "bg-yellow-500 text-white" :
+                      child.nutritionStatus === 'Normal' ? "bg-green-500 text-white" :
+                      child.nutritionStatus === 'MAM' ? "bg-yellow-500 text-white" :
                       "bg-red-500 text-white"
                     }`}>
-                      {child.status}
+                      {child.nutritionStatus}
                     </span>
                   </div>
                   
@@ -454,7 +369,7 @@ export default function ChildScreening() {
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600">Age:</span>
-                      <span className="font-medium">{child.ageMonths} months</span>
+                      <span className="font-medium">{child.age} months</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600">MUAC:</span>
@@ -491,7 +406,7 @@ export default function ChildScreening() {
         type="child-screening"
         userOptions={
           screeningsData?.users?.map((user: any) => ({
-            label: user.fullName,
+            label: user.fullName || user.name,
             value: user.id
           })) || []
         }

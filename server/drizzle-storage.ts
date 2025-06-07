@@ -183,6 +183,8 @@ export class DrizzleStorage implements IStorage {
       
       const [result] = await db.insert(awarenessSessions).values({
         ...insertSession,
+        latitude: insertSession.latitude ? insertSession.latitude.toString() : null,
+        longitude: insertSession.longitude ? insertSession.longitude.toString() : null,
         images: imagesStr
       });
       
@@ -308,6 +310,8 @@ export class DrizzleStorage implements IStorage {
       
       const [result] = await db.insert(childScreenings).values({
         ...insertScreening,
+        latitude: insertScreening.latitude ? insertScreening.latitude.toString() : null,
+        longitude: insertScreening.longitude ? insertScreening.longitude.toString() : null,
         images: imagesStr
       });
       
@@ -333,6 +337,9 @@ export class DrizzleStorage implements IStorage {
       
       return childrenList.map(child => ({
         ...child,
+        weight: parseFloat(child.weight as string),
+        height: parseFloat(child.height as string),
+        muac: child.muac ? parseFloat(child.muac as string) : null,
         images: child.images ? JSON.parse(child.images) : []
       })) as ScreenedChild[];
     } catch (error) {
@@ -392,6 +399,9 @@ export class DrizzleStorage implements IStorage {
       
       const [result] = await db.insert(screenedChildren).values({
         ...insertChild,
+        weight: insertChild.weight.toString(),
+        height: insertChild.height.toString(),
+        muac: insertChild.muac ? insertChild.muac.toString() : null,
         images: imagesStr
       });
       
@@ -400,6 +410,9 @@ export class DrizzleStorage implements IStorage {
       
       return {
         ...child,
+        weight: parseFloat(child.weight as string),
+        height: parseFloat(child.height as string),
+        muac: child.muac ? parseFloat(child.muac as string) : null,
         images: child.images ? JSON.parse(child.images) : []
       } as ScreenedChild;
     } catch (error) {

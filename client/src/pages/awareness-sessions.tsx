@@ -1,9 +1,11 @@
+
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/contexts/auth-context';
 import { useToast } from '@/hooks/use-toast';
 import { formatDate } from '@/lib/utils';
 import { useOnlineStatus } from '@/hooks/use-online-status';
+import type { AwarenessSessionsResponse } from '@/types/api';
 
 import {
   Card,
@@ -12,11 +14,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from '@/components/ui/button';
 import { FileDown, Plus } from 'lucide-react';
 import AwarenessSessionForm from '@/components/awareness-session-form-new';
-import DataTable from '@/components/data-table';
 import ExportDataModal from '@/components/export-data-modal';
 import { downloadExportData, prepareAwarenessSessionsForExport } from '@/lib/export-to-excel';
 
@@ -28,7 +28,7 @@ export default function AwarenessSessions() {
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
 
   // Fetch sessions data
-  const { data: sessionsData, isLoading } = useQuery({
+  const { data: sessionsData, isLoading } = useQuery<AwarenessSessionsResponse>({
     queryKey: ['/api/awareness-sessions'],
     enabled: activeTab === "list" && !!user
   });
@@ -38,7 +38,7 @@ export default function AwarenessSessions() {
     // Prepare mock data for export
     const exportData = prepareAwarenessSessionsForExport(
       sessionsData?.sessions || [],
-      sessionsData?.attendees || [],
+      sessionsData?.attendees ? Object.values(sessionsData.attendees).flat() : [],
       options
     );
     
@@ -50,78 +50,6 @@ export default function AwarenessSessions() {
       description: "Your data is being exported to JSON format.",
     });
   };
-
-  // Set up columns for the data table
-  const columns = [
-    {
-      accessorKey: "date",
-      header: "Date",
-      cell: ({ row }: any) => {
-        // Add null check to prevent undefined errors
-        return row?.original?.date ? formatDate(row.original.date) : 'N/A';
-      },
-    },
-    {
-      accessorKey: "villageName",
-      header: "Village",
-    },
-    {
-      accessorKey: "ucName",
-      header: "UC Name",
-    },
-    {
-      accessorKey: "conductedBy",
-      header: "Conducted By",
-    },
-    {
-      accessorKey: "attendeeCount",
-      header: "Attendees",
-    },
-    {
-      id: "actions",
-      header: "Actions",
-      cell: (info: any) => {
-        const rowData = info.row?.original || {};
-        const villageName = rowData.villageName || 'Unknown Village';
-        
-        return (
-          <div className="space-x-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => {
-                // View details
-                toast({
-                  title: "Viewing Session Details",
-                  description: `Viewing details for session in ${villageName}`,
-                });
-              }}
-            >
-              View
-            </Button>
-            
-            {user && ['developer', 'master'].includes(user.role) && (
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
-                onClick={() => {
-                  // Delete session
-                  toast({
-                    variant: "destructive",
-                    title: "Delete Session",
-                    description: "This feature is not yet implemented.",
-                  });
-                }}
-              >
-                Delete
-              </Button>
-            )}
-          </div>
-        );
-      },
-    },
-  ];
 
   // Define the new columns for the table view
   const tableColumns = [
@@ -142,7 +70,7 @@ export default function AwarenessSessions() {
       id: "date",
       header: "Date",
       cell: ({ row }: any) => {
-        return row?.original?.date ? formatDate(row.original.date) : 'N/A';
+        return row?.original?.sessionDate ? formatDate(row.original.sessionDate) : 'N/A';
       },
     },
     {
@@ -180,7 +108,9 @@ export default function AwarenessSessions() {
       id: "attendees",
       header: "Attendees",
       cell: ({ row }: any) => {
-        return row?.original?.attendeeCount || 0;
+        const sessionId = row?.original?.id;
+        const attendeeCount = sessionsData?.attendees?.[sessionId]?.length || 0;
+        return attendeeCount;
       }
     },
     {
@@ -320,33 +250,36 @@ export default function AwarenessSessions() {
               <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500"></div>
             </div>
           ) : sessionsData?.sessions?.length ? (
-            sessionsData.sessions.map((session: any, index: number) => (
-              <Card key={session.id || index} className="overflow-hidden">
-                <CardHeader className="p-4">
-                  <div className="flex justify-between items-start">
-                    <CardTitle className="text-base">{session.villageName || 'Unknown Village'}</CardTitle>
-                    <div className="text-xs">#{index + 1}</div>
-                  </div>
-                  <CardDescription className="text-xs">UC: {session.ucName || 'N/A'}</CardDescription>
-                </CardHeader>
-                <CardContent className="p-4 pt-0">
-                  <div className="space-y-1.5">
-                    <div className="flex justify-between">
-                      <span className="text-xs font-medium">Date:</span>
-                      <span className="text-xs">{formatDate(session.date)}</span>
+            sessionsData.sessions.map((session: any, index: number) => {
+              const attendeeCount = sessionsData?.attendees?.[session.id]?.length || 0;
+              return (
+                <Card key={session.id || index} className="overflow-hidden">
+                  <CardHeader className="p-4">
+                    <div className="flex justify-between items-start">
+                      <CardTitle className="text-base">{session.villageName || 'Unknown Village'}</CardTitle>
+                      <div className="text-xs">#{index + 1}</div>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-xs font-medium">Conducted by:</span>
-                      <span className="text-xs">{session.conductedBy}</span>
+                    <CardDescription className="text-xs">UC: {session.ucName || 'N/A'}</CardDescription>
+                  </CardHeader>
+                  <CardContent className="p-4 pt-0">
+                    <div className="space-y-1.5">
+                      <div className="flex justify-between">
+                        <span className="text-xs font-medium">Date:</span>
+                        <span className="text-xs">{formatDate(session.sessionDate)}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-xs font-medium">Conducted by:</span>
+                        <span className="text-xs">{session.conductedBy}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-xs font-medium">Attendees:</span>
+                        <span className="text-xs">{attendeeCount}</span>
+                      </div>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-xs font-medium">Attendees:</span>
-                      <span className="text-xs">{session.attendeeCount || 0}</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))
+                  </CardContent>
+                </Card>
+              );
+            })
           ) : (
             <div className="col-span-full text-center py-8 text-gray-500">
               <p>No sessions found</p>
@@ -377,7 +310,7 @@ export default function AwarenessSessions() {
         type="awareness-sessions"
         userOptions={
           sessionsData?.users?.map((user: any) => ({
-            label: user.fullName,
+            label: user.fullName || user.name,
             value: user.id
           })) || []
         }

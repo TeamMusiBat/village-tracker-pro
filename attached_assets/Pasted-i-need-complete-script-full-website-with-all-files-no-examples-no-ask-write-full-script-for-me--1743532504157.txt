@@ -1,0 +1,156 @@
+i need complete script, full website with all files, no examples no ask, write full script for me
+
+create a fully responsive, user friendly and best ui design website i will host it in hostinger 🔹 Hosting & Deployment Deploy on Hostinger: Domain: https://healthbyasif.buylevi.xyz/ Database: User: u769157863_track4health Pass: Atifkhan83##
+
+project instructions are blow website title/name: Track4Health tagline: Monitor. Improve. Thrive. features: user management Only authorized users can use features, public can contact us by whatsapp +923032939576 a blog option i will write some blogs for users and for public to aware them health related knowladge 3 type of roles/users 1st developer & dev login pass blow Developer (1st Grade - Full Access): Username: asifjamali83 Password: Atifkhan83## this dev/Super Admin should be hidden from Masters & Users.
+
+2nd Masters role, i will add masters latter, role can add users (#3rd) can track users, track there locations Can see users, add/remove users, and check their activity logs. Cannot modify core system settings. Masters (User Management & Monitoring)
+
+3rd are users 2 types of users can be added FMT & Social Mobilizers
+
+i mean when i am adding a user, it should ask me his Designation/Role if i select master, he can add users and users can be FMT AND/or Social Mobilizers these users can only data entry, only access to data entry cant see other users, only can conduct sessions and export there daily, all time or select period of time reports
+
+reports should be in json formate which will be easy for me to export in excel in future, and json should be like last entry should be on top, this will make my work easy and all entries in input fields name, father/husband name or Village Name , Uc name should be in camelcase, and trim extra spaces before and after extra spaces please before saving/submiting camelcase mean "Asif Jamali" not "asif jamali" and trim too as we do in excel these changes should be auto corrected on spot eg i wrote asif ali, it should change to Asif Ali, but for once, if i rewrite again asif ali, than dont camelcase it
+
+basic instructions about website
+
+Track4Health - Monitor. Improve. Thrive.
+
+Project Goal: Track4Health is a web-based health record management system focusing on child screening, immunization, nutrition, and hygiene awareness sessions. This system allows efficient bulk data entry, structured Excel exports, and real-time user tracking.
+
+Modules & Pages
+
+A. Awareness Sessions Page
+
+Auto-fill current Date blow page title. Bulk Entry Support (Multiple attendees added at once). Village Name, UC Name, User Name & Designation (Auto-fill based on logged-in user). but should be editable. also add location button to get current location. and fill latitude and longitude. in location field. if location is enabled and user already granted location permission. else ask for permission only once if he refuse skip asking... and blow this Data Entry Fields: Name, Father/Husband Name, Age/DOB (there in age input should be calander to select dob , but choose latest responsive calander where i can easily and fast edit year month and date from 1 to 31 also if a particapant say he is 50 years old, than in other box i will write 50 , age should be culculated in years), Gender, Under Five Year Children, Contact Number (optional), Remarks, Images (optional, camera button or upload button (can add unlimited images))
+
+Export Options: Export only today's data. Export selected dates/range from-to date history. Export full history.
+
+B. Child Screening Page Auto-fill current Date blow page title. Bulk Entry Support (Multiple attendees added at once). Village Name, UC Name, User Name & Designation (Auto-fill based on logged-in user). but should be editable. also add location button to get current location. and fill latitude and longitude. in location field. if location is enabled and user already granted location permission. else ask for permission only once if he refuse skip asking... and blow this Data Entry Fields: Name, Father, Age (6 to 59 months, there in age input should be calander to select dob , but choose latest responsive calander where i can easily and fast edit year month and date from 1 to 31 also if a particapant say he is 50 years old, than in other box i will write 50 , age should be culculated in months)), MUAC (in cm), Gender, Vaccination, , Images (optional, camera button or upload button (can add unlimited images), Remarks MUAC-Based Conditional color input fields borders: MUAC ≤ 11 → Red row + "SAM". MUAC ≤ 12 → Yellow row + "MAM" MUAC > 12 → Green row + "Normal" Vaccination Options: 0 - Dose, 1st - Dose, 2nd - Dose, 3rd - Dose, MR - 1, MR - 2 Checkbox for Due Vaccine ➔ If checked, an icon appears next to the dose.
+
+Export Options: Export only today's data. Export selected dates/range from-to date history. Export full history. only devolper and masters can filter and export MAM/SAM/Normal cases also can select multiple cases before export or to see as in screenshoot. only devolper and masters can merge all workers’ Child Screening data into one export (+ filter sam/mam/normal or can see as in screenshoot).
+
+Duplicate Entry Warning for both pages and entries for that date If Name + Father Name + Village match an existing record on the same date, a warning will appear: "This entry already exists. Do you want to edit or force submit?"
+
+# Real-Time Monitoring & Location Tracking
+Online Status Indicator: Green icon for users currently active in the field. User Location Tracking: If a worker grants location access, master and developer can track their field location. Location data is only accessible by masters and developers.
+
+#. Offline Support If offline or internet issue, data is saved locally. When online, data syncs automatically.
+
+#. Export Features Excel (.xlsx) export with structured columns. Child Screening Sheet: Automatic color formatting for MUAC-based data.
+
+Export Options: there should be checkbox for date range from-to or today for export. there should be checkbox for Export MAM/SAM/Normal. Export all child screening data combined (merged from all workers). if checkbox is checked. Export each worker's data separately. if checkbox is checked.
+
+Export FMT & Social Mobilizers Sessions (today's or all-time as well as child screening but here no mauc).
+
+Excel Formatting: Title should be bold and centered. Column headers formatted properly and centered fit in columns. Wide text (e.g., village names) should have wrapping enabled. 6. UI & UX Considerations Simple, mobile-friendly interface for fast data entry. Forms designed like Facebook comments (quick input).
+
+Dark mode toggle for better visibility. but light mode should be default.
+
+Login Button. WhatsApp Contact Button (+923032939576) for support. this should only be on main page just Only authorized users (created by Super Admin) can log in. Super Admin can monitor all user activities. No public registration.
+
+also do not make errors and see blow other features i want these should be fixed 1. in users rename my name from Super Admin to Asif Jamali remove other default users, masters, fmt and sm, in user add add 2 more input fields, Email And Phone Number but both should be optional 2. Blogs page should be visable/available for public too even not a user, in blogs, there are names Dr sarah imran and fatma, rename these to Asif Jamali also from these both blogs and from blow paraghraph write home/main page when someone (who is not a user must see about of this website) Track4Health is a web-based health record management system focusing on child screening, immunization, nutrition, and hygiene awareness sessions. This system allows efficient bulk data entry, structured Excel exports, and real-time user tracking. 3. User Designation for users cant be edited by users while data entry, only masters/devloper can edit this when they are adding entries. 4. in awareness session and child screening at add session button (bulk entry option is not available, i want Add Attendees can be used bulk as add/+ participatant, i mean if there are 10 entires, sm and fmt will be writting 10 times village name and uc name so make bulk entry for Add Attendees) and this add session box is not responsive, i mean not being scrolled see screenshoot im asking for multiply entries + this box or what is best and easy for users, do that thing 5. at User Management if a user is online add a url blow to track his location, a clickable link to open in google map to view his currunt location 6. developer can delete any user, master can delete only fmt/sm users and fmt/sm cant do any managment with website, only they can access home, blogs, child screening data entry, and awareness sessions 1. users cant logout, only master and developer can 2. check screenshoot and fix it as i marked things in Awareness Sessions, remove double entry for date, village name and uc name, remove add session and add a input box here for session number, blow add a + icon infront of add Attendees for bulk entries, eg if i have 10 entries in session 1(i will write village name,uc name 1 time not 10 times for all attendess, after writting first person details i will click on + icon, this 1st must go blow in pending(editable also can be removed) and above name father name age etc should back to defualt for next entry), at end i will click on save session, also if i wrote 9 names and 1 is just written not added to bulk, both written and bulk should be saved and add a checkbox blow with remarks box (Person belongs to same UC (defualt it should be checked if we uncheck a box should open to add his real address (cause meybe he is a guest))) 3. add adding images option for session, but it should be with address top area, and multiply images can be added and taken by camera 4. as/after Awareness Sessions fix do all fixes for child screening page too, which i requested in previous msg, its not responsive and child screening at add session button (bulk entry option is not available, i want Add Attendees can be used bulk as add/+ participatant, i mean if there are 10 entires, sm and fmt will be writting 10 times village name and uc name so make bulk entry for Add Attendees) and this add session box is not responsive, i mean not being scrolled see screenshoot im asking for multiply entries + this box or what is best and easy for users, do that thing same add image options and same as screenshoot i said
+
+these both pages (Awareness Sessions and child screening) ui should be same, just there fields and inputs are defrent, just fix add session of child screening... as same as awareness sessions 1 i want Dynamic Sidebar Navigation or Hover Expandable Sidebar also logout button should be hidden for users, masters and developer can logout only 2 on dashboard do not show blog lists and do not show "Field Worker 1 Field Monitor" this user is not exists, show only active workers here make this page fully responsive instead of "Nutritional Status Distribution" it is for screening update it 3 add Home button above Dashboard in sidebar, if we are loggedin, dont show login box else let login too, write about for this website here, some details for this website home should be fully responsive for home blow paraghaph is also an idea Project Goal: Track4Health is a web-based health record management system focusing on child screening, immunization, nutrition, and hygiene awareness sessions. This system allows efficient bulk data entry, structured Excel exports, and real-time user tracking. 4. The theme color should change when clicked. I need two themes: Dark and Light. In Dark Mode, use random dark colors. In Light Mode, use random light colors. Text should always remain clear and readable, unaffected by background colors. On every page change or refresh, a new random color should be applied. Theme & Colors
+
+Ensure random light and dark colors are applied on every refresh or page change.
+
+Prevent text readability issues by ensuring text always contrasts well with the background.
+
+System theme (default) should be 99% white, including borders for a clean look.
+
+Charts & Data Views
+
+Do not add a pie chart on the home page. Instead, use a line chart.
+
+Ensure full-month details are displayed on both dashboard and home page, not just a monthly summary.
+
+User Roles & Permissions
+
+Remove the "Add Developer" option from the Users page.
+
+Role-based restrictions:
+
+Developer: Can add Masters.
+
+Master: Can add SM and FMT.
+
+SM & FMT: Cannot logout, add users, or edit users. They can only access:
+
+Home, Blogs, Child Screening, and Awareness Sessions.
+
+New Fields in Data Entry
+
+In Awareness Session & Child Screening, add:
+
+Conducted by (User full name)
+
+Designation (Editable only by Masters and Developers)
+
+These should also be included in data exports.
+
+All entries can only be edited or deleted by Masters and Developers.
+
+Page-Specific Updates
+
+Awareness Session Age Calculation:
+Convert age to Years (Age (Years)).
+
+Allow Date of Birth (DOB) entry but only in DD/MM/YYYY format.
+
+Children Field Update:
+
+Change "Under 5 Children" → "Children (Under 5 Years)".
+
+If input is not empty (≥1), show a Vaccination Details box below.
+
+Vaccination Status Dropdown:
+
+Options:
+
+0 - Dose, 1st - Dose, 2nd - Dose, 3rd - Dose, MR - 1
+
+Vaccine Due checkbox (if checked, require an image of the session with the child’s card).
+
+Field Renaming:
+
+Change "Belongs to Same UC" → "Person Belongs From Same Address".
+
+Auto-Clear Fields After Entry:
+
+After adding an attendee, the Name and Father/Husband Name fields should reset automatically.
+
+Child Screening Data Table & Filtering Issues:
+Max 100 rows per view.
+
+Fix filtering to allow selecting multiple conditions (e.g., SAM & MAM together).
+
+Age Calculation:
+
+Convert age to Months (Age (Months)).
+
+Allow Date of Birth (DOB) entry but only in DD/MM/YYYY format.
+
+Vaccination Status Dropdown:
+
+Options:
+
+0 - Dose, 1st - Dose, 2nd - Dose, 3rd - Dose, MR - 1, MR - 2, Completed.
+
+Vaccine Due checkbox (to mark if vaccination is needed).
+
+Field Renaming:
+
+Change "Belongs to Same UC" → "Kid Belongs From Same Address".
+
+Auto-Clear Fields After Entry: After adding a child, Child Name and Father Name fields should reset automatically. in users page, remove adding developer option, let only masters sm and fmt , and developer can add masters, master can add sm and fmt and these sm and fmt cant logout and cant add users, they can just access home, blogs, child screening and awareness sessions 1 Awareness Session age should be culculated in years, Age (Years) also dob can be written too but only dd/mm/yyyy formate supported change "Under 5 Children" to "Children (Under 5 Years)" and if user added 1 mean not left empty, show a box blow to get vaccination details Vaccination Status (in title) and choose from blow options box should be available 0 - Dose, 1st - Dose, 2nd - Dose, 3rd - Dose, MR - 1 and Vaccine Due check box to check if his kid need tobe vaccine if due checked, than add a image of that session with that kids card should be necessary change "Belongs to Same UC" to "Person Belongs From Same Address" after clicking add attendee name and Father/Husband Name input boxes should be back to empty, last written is always remain (i want masters and developer can edit these entries too) even can delete too
+
+2 Child Screening show blow table count maximum 100 and filter is not working correctly to view entries, (i want masters and developer can edit these entries too) even can delete too i want filter to be worked for multiply select eg sam mam both can be selected in add screening age should be culculated in months, Age (Months) also dob can be written too but only dd/mm/yyyy formate supported
+
+Vaccination Status (in title) and choose from blow options box should be available 0 - Dose, 1st - Dose, 2nd - Dose, 3rd - Dose, MR - 1, MR - 2, Completed and Vaccine Due check box to check if this kid need tobe vaccine
+
+change "Belongs to Same UC" to "Kid Belongs From Same Address" after clicking add child name and Father Name input boxes should be back to empty, last written is always remain (i want masters and developer can edit these entries too) even can delete too add district as optional in user add, i mean user district should be asked when he is being added as a user
+
+add a retry option for get location again also a pause location button for offline entries eg if user is filling data from his home, dont add his home, mean he must check he is working on spot and filling data, this should be for both pages, awarnes and child screening look at these 2 images, i want accurate location must be added as you can see there are 2 screenshoots 1 is we share live location in whatsapp 2nd is from google map blue mark is my currunt location red i circled google map asks/grant for permetion access for accurate location as same as i want location must be added on both pages, awarness session and in child screening also on google map view too
+
+just edit/update 1 thing from +add session in awareness sessions and child screening , when i click add attendee previous inputs are not removing, from name, father name age under five and same as in child screening name father name father name

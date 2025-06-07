@@ -1,0 +1,132 @@
+create a fully responsive, user friendly and best ui design website
+i will host it in hostinger 🔹 Hosting & Deployment
+Deploy on Hostinger:
+Domain: https://healthbyasif.buylevi.xyz/
+Database:
+User: u769157863_track4health
+Pass: Atifkhan83##
+
+project instructions are blow
+website title/name: Track4Health
+tagline: Monitor. Improve. Thrive.
+features:
+user management
+Only authorized users can use features, public can contact us by whatsapp +923032939576
+a blog option i will write some blogs for users and for public to aware them health related knowladge
+3 type of roles/users
+1st developer & dev login pass blow
+Developer (1st Grade - Full Access):
+Username: asifjamali83
+Password: Atifkhan83##
+this dev/Super Admin should be hidden from Masters & Users.
+
+2nd Masters role, i will add masters latter, role
+can add users (#3rd)
+can track users, track there locations
+Can see users, add/remove users, and check their activity logs.
+Cannot modify core system settings.
+Masters (User Management & Monitoring)
+
+3rd are users
+2 types of users can be added 
+FMT & Social Mobilizers
+
+i mean when i am adding a user, it should ask me his Designation/Role
+if i select master, he can add users and users can be FMT AND/or Social Mobilizers
+these users can only data entry, only access to data entry
+cant see other users, only can conduct sessions and export there daily, all time or select period of time reports
+
+reports should be in json formate which will be easy for me to export in excel in future, and json should be like last entry should be on top, this will make my work easy
+and all entries in input fields name, father/husband name or Village Name , Uc name should be in camelcase, and trim extra spaces before and after extra spaces please before saving/submiting
+camelcase mean "Asif Jamali" not "asif jamali" and trim too as we do in excel
+these changes should be auto corrected on spot eg i wrote asif ali, it should change to Asif Ali, but for once, if i rewrite again asif ali, than dont camelcase it
+
+basic instructions about website
+
+Track4Health - Monitor. Improve. Thrive.
+
+Project Goal:
+Track4Health is a web-based health record management system focusing on child screening, immunization, nutrition, and hygiene awareness sessions. This system allows efficient bulk data entry, structured Excel exports, and real-time user tracking.
+
+Modules & Pages
+
+A. Awareness Sessions Page
+
+Auto-fill current Date blow page title.
+Bulk Entry Support (Multiple attendees added at once).
+Village Name, UC Name, User Name & Designation (Auto-fill based on logged-in user). but should be editable.
+also add location button to get current location. and fill latitude and longitude. in location field. if location is enabled and user already granted location permission. else ask for permission only once if he refuse skip asking... and blow this
+Data Entry Fields:
+Name, Father/Husband Name, Age/DOB (there in age input should be calander to select dob , but choose latest responsive calander where i can easily and fast edit year month and date from 1 to 31 also if a particapant say he is 50 years old, than in other box i will write 50 , age should be culculated in years), Gender, Under Five Year Children, Contact Number (optional), Remarks, Images (optional, camera button or upload button (can add unlimited images))
+
+Export Options:
+Export only today's data.
+Export selected dates/range from-to date history.
+Export full history.
+
+B. Child Screening Page
+Auto-fill current Date blow page title.
+Bulk Entry Support (Multiple attendees added at once).
+Village Name, UC Name, User Name & Designation (Auto-fill based on logged-in user). but should be editable.
+also add location button to get current location. and fill latitude and longitude. in location field. if location is enabled and user already granted location permission. else ask for permission only once if he refuse skip asking... and blow this
+Data Entry Fields:
+Name, Father, Age (6 to 59 months, there in age input should be calander to select dob , but choose latest responsive calander where i can easily and fast edit year month and date from 1 to 31 also if a particapant say he is 50 years old, than in other box i will write 50 , age should be culculated in months)), MUAC (in cm), Gender, Vaccination, , Images (optional, camera button or upload button (can add unlimited images), Remarks
+MUAC-Based Conditional color input fields borders:
+MUAC ≤ 11 → Red row + "SAM".
+MUAC ≤ 12 → Yellow row + "MAM"
+MUAC > 12 → Green row + "Normal"
+Vaccination Options:
+0 - Dose, 1st - Dose, 2nd - Dose, 3rd - Dose, MR - 1, MR - 2
+Checkbox for Due Vaccine ➔ If checked, an icon appears next to the dose.
+
+Export Options:
+Export only today's data.
+Export selected dates/range from-to date history.
+Export full history.
+only devolper and masters can filter and export MAM/SAM/Normal cases also can select multiple cases before export or to see as in screenshoot.
+only devolper and masters can merge all workers’ Child Screening data into one export (+ filter sam/mam/normal or can see as in screenshoot).
+
+Duplicate Entry Warning for both pages and entries for that date
+If Name + Father Name + Village match an existing record on the same date, a warning will appear:
+"This entry already exists. Do you want to edit or force submit?"
+
+# Real-Time Monitoring & Location Tracking
+
+Online Status Indicator:
+Green icon for users currently active in the field.
+User Location Tracking:
+If a worker grants location access, master and developer can track their field location.
+Location data is only accessible by masters and developers.
+
+#. Offline Support
+If offline or internet issue, data is saved locally.
+When online, data syncs automatically.
+
+#. Export Features
+Excel (.xlsx) export with structured columns.
+Child Screening Sheet: Automatic color formatting for MUAC-based data.
+
+Export Options:
+there should be checkbox for date range from-to or today for export.
+there should be checkbox for Export MAM/SAM/Normal.
+Export all child screening data combined (merged from all workers). if checkbox is checked.
+Export each worker's data separately. if checkbox is checked.
+
+Export FMT & Social Mobilizers Sessions (today's or all-time as well as child screening but here no mauc).
+
+Excel Formatting:
+Title should be bold and centered.
+Column headers formatted properly and centered fit in columns.
+Wide text (e.g., village names) should have wrapping enabled.
+6. UI & UX Considerations
+Simple, mobile-friendly interface for fast data entry.
+Forms designed like Facebook comments (quick input).
+
+Dark mode toggle for better visibility. but light mode should be default.
+
+
+Login Button.
+WhatsApp Contact Button (+923032939576) for support. this should only be on main page just
+Only authorized users (created by Super Admin) can log in.
+Super Admin can monitor all user activities.
+No public registration.

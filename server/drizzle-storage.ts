@@ -1,15 +1,18 @@
 import { 
-  users, type User, type InsertUser,
-  awarenessSessions, type AwarenessSession, type InsertAwarenessSession,
-  attendees, type Attendee, type InsertAttendee,
-  childScreenings, type ChildScreening, type InsertChildScreening,
-  screenedChildren, type ScreenedChild, type InsertScreenedChild,
-  blogs, type Blog, type InsertBlog,
-  userLocations, pendingSyncItems
+  type User, type InsertUser,
+  type AwarenessSession, type InsertAwarenessSession,
+  type Attendee, type InsertAttendee,
+  type ChildScreening, type InsertChildScreening,
+  type ScreenedChild, type InsertScreenedChild,
+  type Blog, type InsertBlog,
 } from "@shared/schema";
+import { 
+  users, userLocations, awarenessSessions, attendees, 
+  childScreenings, screenedChildren, blogs, pendingSyncItems 
+} from "./drizzle-schemas";
 import { IStorage } from "./storage";
 import { db } from "./db";
-import { eq, desc, and, or } from "drizzle-orm";
+import { eq, desc, and } from "drizzle-orm";
 import bcrypt from "bcryptjs";
 import { log } from "./vite";
 
@@ -18,7 +21,7 @@ export class DrizzleStorage implements IStorage {
   async getUser(id: number): Promise<User | undefined> {
     try {
       const [user] = await db.select().from(users).where(eq(users.id, id));
-      return user;
+      return user as User;
     } catch (error) {
       console.error('Error getting user by id:', error);
       throw error;
@@ -28,7 +31,7 @@ export class DrizzleStorage implements IStorage {
   async getUserByUsername(username: string): Promise<User | undefined> {
     try {
       const [user] = await db.select().from(users).where(eq(users.username, username));
-      return user;
+      return user as User;
     } catch (error) {
       console.error('Error getting user by username:', error);
       throw error;
@@ -45,9 +48,11 @@ export class DrizzleStorage implements IStorage {
         ...insertUser,
         password: hashedPassword,
         isOnline: false,
-      }).returning();
+      });
       
-      return user;
+      // Return the created user by fetching it
+      const [createdUser] = await db.select().from(users).where(eq(users.id, user.insertId));
+      return createdUser as User;
     } catch (error) {
       console.error('Error creating user:', error);
       throw error;
@@ -56,7 +61,8 @@ export class DrizzleStorage implements IStorage {
 
   async getAllUsers(): Promise<User[]> {
     try {
-      return await db.select().from(users);
+      const result = await db.select().from(users);
+      return result as User[];
     } catch (error) {
       console.error('Error getting all users:', error);
       throw error;
@@ -65,7 +71,8 @@ export class DrizzleStorage implements IStorage {
 
   async getOnlineUsers(): Promise<User[]> {
     try {
-      return await db.select().from(users).where(eq(users.isOnline, true));
+      const result = await db.select().from(users).where(eq(users.isOnline, true));
+      return result as User[];
     } catch (error) {
       console.error('Error getting online users:', error);
       throw error;
@@ -87,8 +94,8 @@ export class DrizzleStorage implements IStorage {
     try {
       await db.insert(userLocations).values({
         userId,
-        latitude,
-        longitude,
+        latitude: latitude.toString(),
+        longitude: longitude.toString(),
       });
     } catch (error) {
       console.error('Error updating user location:', error);
@@ -127,22 +134,10 @@ export class DrizzleStorage implements IStorage {
       const sessions = await db.select().from(awarenessSessions)
         .orderBy(desc(awarenessSessions.sessionDate));
       
-      // Add creator names by fetching users
-      const sessionsWithCreators: AwarenessSession[] = [];
-      for (const session of sessions) {
-        const [creator] = await db.select({
-          name: users.name
-        }).from(users).where(eq(users.id, session.createdBy));
-        
-        sessionsWithCreators.push({
-          ...session,
-          creatorName: creator?.name,
-          // Convert string images to array
-          images: session.images ? JSON.parse(session.images as string) : []
-        });
-      }
-      
-      return sessionsWithCreators;
+      return sessions.map(session => ({
+        ...session,
+        images: session.images ? JSON.parse(session.images) : []
+      })) as AwarenessSession[];
     } catch (error) {
       console.error('Error getting all awareness sessions:', error);
       throw error;
@@ -155,22 +150,10 @@ export class DrizzleStorage implements IStorage {
         .orderBy(desc(awarenessSessions.sessionDate))
         .limit(limit);
       
-      // Add creator names by fetching users
-      const sessionsWithCreators: AwarenessSession[] = [];
-      for (const session of sessions) {
-        const [creator] = await db.select({
-          name: users.name
-        }).from(users).where(eq(users.id, session.createdBy));
-        
-        sessionsWithCreators.push({
-          ...session,
-          creatorName: creator?.name,
-          // Convert string images to array
-          images: session.images ? JSON.parse(session.images as string) : []
-        });
-      }
-      
-      return sessionsWithCreators;
+      return sessions.map(session => ({
+        ...session,
+        images: session.images ? JSON.parse(session.images) : []
+      })) as AwarenessSession[];
     } catch (error) {
       console.error('Error getting recent awareness sessions:', error);
       throw error;
@@ -183,17 +166,10 @@ export class DrizzleStorage implements IStorage {
       
       if (!session) return undefined;
       
-      // Get creator name
-      const [creator] = await db.select({
-        name: users.name
-      }).from(users).where(eq(users.id, session.createdBy));
-      
       return {
         ...session,
-        creatorName: creator?.name,
-        // Convert string images to array
-        images: session.images ? JSON.parse(session.images as string) : []
-      };
+        images: session.images ? JSON.parse(session.images) : []
+      } as AwarenessSession;
     } catch (error) {
       console.error('Error getting awareness session:', error);
       throw error;
@@ -205,22 +181,18 @@ export class DrizzleStorage implements IStorage {
       // Format image array as JSON string
       const imagesStr = insertSession.images ? JSON.stringify(insertSession.images) : JSON.stringify([]);
       
-      const [session] = await db.insert(awarenessSessions).values({
+      const [result] = await db.insert(awarenessSessions).values({
         ...insertSession,
         images: imagesStr
-      }).returning();
+      });
       
-      // Get creator name
-      const [creator] = await db.select({
-        name: users.name
-      }).from(users).where(eq(users.id, session.createdBy));
+      // Return the created session by fetching it
+      const [session] = await db.select().from(awarenessSessions).where(eq(awarenessSessions.id, result.insertId));
       
       return {
         ...session,
-        creatorName: creator?.name,
-        // Convert string images to array
-        images: session.images ? JSON.parse(session.images as string) : []
-      };
+        images: session.images ? JSON.parse(session.images) : []
+      } as AwarenessSession;
     } catch (error) {
       console.error('Error creating awareness session:', error);
       throw error;
@@ -236,9 +208,8 @@ export class DrizzleStorage implements IStorage {
       
       return attendeesList.map(attendee => ({
         ...attendee,
-        // Convert string images to array
-        images: attendee.images ? JSON.parse(attendee.images as string) : []
-      }));
+        images: attendee.images ? JSON.parse(attendee.images) : []
+      })) as Attendee[];
     } catch (error) {
       console.error('Error getting attendees by session ID:', error);
       throw error;
@@ -280,16 +251,18 @@ export class DrizzleStorage implements IStorage {
       // Format image array as JSON string
       const imagesStr = insertAttendee.images ? JSON.stringify(insertAttendee.images) : JSON.stringify([]);
       
-      const [attendee] = await db.insert(attendees).values({
+      const [result] = await db.insert(attendees).values({
         ...insertAttendee,
         images: imagesStr
-      }).returning();
+      });
+      
+      // Return the created attendee by fetching it
+      const [attendee] = await db.select().from(attendees).where(eq(attendees.id, result.insertId));
       
       return {
         ...attendee,
-        // Convert string images to array
-        images: attendee.images ? JSON.parse(attendee.images as string) : []
-      };
+        images: attendee.images ? JSON.parse(attendee.images) : []
+      } as Attendee;
     } catch (error) {
       console.error('Error creating attendee:', error);
       throw error;
@@ -302,22 +275,10 @@ export class DrizzleStorage implements IStorage {
       const screenings = await db.select().from(childScreenings)
         .orderBy(desc(childScreenings.screeningDate));
       
-      // Add creator names by fetching users
-      const screeningsWithCreators: ChildScreening[] = [];
-      for (const screening of screenings) {
-        const [creator] = await db.select({
-          name: users.name
-        }).from(users).where(eq(users.id, screening.createdBy));
-        
-        screeningsWithCreators.push({
-          ...screening,
-          creatorName: creator?.name,
-          // Convert string images to array
-          images: screening.images ? JSON.parse(screening.images as string) : []
-        });
-      }
-      
-      return screeningsWithCreators;
+      return screenings.map(screening => ({
+        ...screening,
+        images: screening.images ? JSON.parse(screening.images) : []
+      })) as ChildScreening[];
     } catch (error) {
       console.error('Error getting all child screenings:', error);
       throw error;
@@ -330,17 +291,10 @@ export class DrizzleStorage implements IStorage {
       
       if (!screening) return undefined;
       
-      // Get creator name
-      const [creator] = await db.select({
-        name: users.name
-      }).from(users).where(eq(users.id, screening.createdBy));
-      
       return {
         ...screening,
-        creatorName: creator?.name,
-        // Convert string images to array
-        images: screening.images ? JSON.parse(screening.images as string) : []
-      };
+        images: screening.images ? JSON.parse(screening.images) : []
+      } as ChildScreening;
     } catch (error) {
       console.error('Error getting child screening:', error);
       throw error;
@@ -352,22 +306,18 @@ export class DrizzleStorage implements IStorage {
       // Format image array as JSON string
       const imagesStr = insertScreening.images ? JSON.stringify(insertScreening.images) : JSON.stringify([]);
       
-      const [screening] = await db.insert(childScreenings).values({
+      const [result] = await db.insert(childScreenings).values({
         ...insertScreening,
         images: imagesStr
-      }).returning();
+      });
       
-      // Get creator name
-      const [creator] = await db.select({
-        name: users.name
-      }).from(users).where(eq(users.id, screening.createdBy));
+      // Return the created screening by fetching it
+      const [screening] = await db.select().from(childScreenings).where(eq(childScreenings.id, result.insertId));
       
       return {
         ...screening,
-        creatorName: creator?.name,
-        // Convert string images to array
-        images: screening.images ? JSON.parse(screening.images as string) : []
-      };
+        images: screening.images ? JSON.parse(screening.images) : []
+      } as ChildScreening;
     } catch (error) {
       console.error('Error creating child screening:', error);
       throw error;
@@ -383,9 +333,8 @@ export class DrizzleStorage implements IStorage {
       
       return childrenList.map(child => ({
         ...child,
-        // Convert string images to array
-        images: child.images ? JSON.parse(child.images as string) : []
-      }));
+        images: child.images ? JSON.parse(child.images) : []
+      })) as ScreenedChild[];
     } catch (error) {
       console.error('Error getting screened children by screening ID:', error);
       throw error;
@@ -441,16 +390,18 @@ export class DrizzleStorage implements IStorage {
       // Format image array as JSON string
       const imagesStr = insertChild.images ? JSON.stringify(insertChild.images) : JSON.stringify([]);
       
-      const [child] = await db.insert(screenedChildren).values({
+      const [result] = await db.insert(screenedChildren).values({
         ...insertChild,
         images: imagesStr
-      }).returning();
+      });
+      
+      // Return the created child by fetching it
+      const [child] = await db.select().from(screenedChildren).where(eq(screenedChildren.id, result.insertId));
       
       return {
         ...child,
-        // Convert string images to array
-        images: child.images ? JSON.parse(child.images as string) : []
-      };
+        images: child.images ? JSON.parse(child.images) : []
+      } as ScreenedChild;
     } catch (error) {
       console.error('Error creating screened child:', error);
       throw error;
@@ -463,20 +414,7 @@ export class DrizzleStorage implements IStorage {
       const blogsList = await db.select().from(blogs)
         .orderBy(desc(blogs.createdAt));
       
-      // Add author names by fetching users
-      const blogsWithAuthors: Blog[] = [];
-      for (const blog of blogsList) {
-        const [author] = await db.select({
-          name: users.name
-        }).from(users).where(eq(users.id, blog.authorId));
-        
-        blogsWithAuthors.push({
-          ...blog,
-          authorName: author?.name
-        });
-      }
-      
-      return blogsWithAuthors;
+      return blogsList as Blog[];
     } catch (error) {
       console.error('Error getting all blogs:', error);
       throw error;
@@ -486,18 +424,7 @@ export class DrizzleStorage implements IStorage {
   async getBlog(id: number): Promise<Blog | undefined> {
     try {
       const [blog] = await db.select().from(blogs).where(eq(blogs.id, id));
-      
-      if (!blog) return undefined;
-      
-      // Get author name
-      const [author] = await db.select({
-        name: users.name
-      }).from(users).where(eq(users.id, blog.authorId));
-      
-      return {
-        ...blog,
-        authorName: author?.name
-      };
+      return blog as Blog;
     } catch (error) {
       console.error('Error getting blog:', error);
       throw error;
@@ -506,17 +433,11 @@ export class DrizzleStorage implements IStorage {
 
   async createBlog(insertBlog: InsertBlog): Promise<Blog> {
     try {
-      const [blog] = await db.insert(blogs).values(insertBlog).returning();
+      const [result] = await db.insert(blogs).values(insertBlog);
       
-      // Get author name
-      const [author] = await db.select({
-        name: users.name
-      }).from(users).where(eq(users.id, blog.authorId));
-      
-      return {
-        ...blog,
-        authorName: author?.name
-      };
+      // Return the created blog by fetching it
+      const [blog] = await db.select().from(blogs).where(eq(blogs.id, result.insertId));
+      return blog as Blog;
     } catch (error) {
       console.error('Error creating blog:', error);
       throw error;
@@ -525,25 +446,16 @@ export class DrizzleStorage implements IStorage {
 
   async updateBlog(id: number, updateData: Partial<InsertBlog>): Promise<Blog | undefined> {
     try {
-      const [updatedBlog] = await db.update(blogs)
+      await db.update(blogs)
         .set({
           ...updateData,
           updatedAt: new Date()
         })
-        .where(eq(blogs.id, id))
-        .returning();
+        .where(eq(blogs.id, id));
       
-      if (!updatedBlog) return undefined;
-      
-      // Get author name
-      const [author] = await db.select({
-        name: users.name
-      }).from(users).where(eq(users.id, updatedBlog.authorId));
-      
-      return {
-        ...updatedBlog,
-        authorName: author?.name
-      };
+      // Return the updated blog by fetching it
+      const [updatedBlog] = await db.select().from(blogs).where(eq(blogs.id, id));
+      return updatedBlog as Blog;
     } catch (error) {
       console.error('Error updating blog:', error);
       throw error;
@@ -565,7 +477,7 @@ export class DrizzleStorage implements IStorage {
       await db.insert(pendingSyncItems).values({
         userId,
         entityType,
-        entityData,
+        entityData: JSON.stringify(entityData),
         synced: false
       });
     } catch (error) {

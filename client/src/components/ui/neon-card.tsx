@@ -1,3 +1,4 @@
+
 import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
@@ -62,11 +63,14 @@ const NeonCard = React.forwardRef<HTMLDivElement, CardProps>(
     const isNeonVariant = variant?.includes('neon');
     
     if (animate || isNeonVariant) {
+      // Separate motion props from div props
+      const { onDrag, onDragStart, onDragEnd, ...divProps } = props;
+      
       return (
         <motion.div
           className={cn(cardVariants({ variant, hover, size, className }))}
           ref={ref}
-          {...props}
+          {...divProps}
           initial={animate ? "hidden" : undefined}
           animate={animate ? "visible" : undefined}
           variants={animate ? cardAnimationVariants : undefined}

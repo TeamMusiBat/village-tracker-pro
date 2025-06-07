@@ -1,3 +1,4 @@
+
 import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
@@ -45,16 +46,17 @@ export interface ButtonProps
 
 const NeonButton = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, asChild = false, children, ...props }, ref) => {
-    // Determine if we should add the neon glow effect
     const isNeonVariant = variant?.includes('neon');
     
-    // Apply Framer Motion animations conditionally
     if (isNeonVariant) {
+      // Separate motion props from button props
+      const { onDrag, onDragStart, onDragEnd, ...buttonProps } = props;
+      
       return (
         <motion.button
           className={cn(buttonVariants({ variant, size, className }))}
           ref={ref}
-          {...props}
+          {...buttonProps}
           whileHover={{ 
             scale: 1.03,
             transition: { duration: 0.2 }
@@ -74,7 +76,6 @@ const NeonButton = React.forwardRef<HTMLButtonElement, ButtonProps>(
       );
     }
     
-    // Default button without neon effects
     return (
       <button
         className={cn(buttonVariants({ variant, size, className }))}

@@ -154,7 +154,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                               currentLastLocation.longitude !== longitude;
       
       if (locationChanged) {
-        setUser((prevUser: User | null) => {
+        setUser(prevUser => {
           if (!prevUser) return null;
           return {
             ...prevUser,
@@ -191,7 +191,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       // Only update user state if status has changed
       if (user.isOnline !== status) {
-        setUser((prevUser: User | null) => {
+        setUser(prevUser => {
           if (!prevUser) return null;
           return {
             ...prevUser,

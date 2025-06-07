@@ -1,3 +1,4 @@
+
 import React, { useCallback, useMemo } from "react";
 import Particles from "react-particles";
 import { Engine } from "tsparticles-engine";
@@ -20,7 +21,6 @@ export function ParticlesBackground({
   speed = "medium",
 }: ParticlesBackgroundProps) {
   
-  // Convert density to a numeric value for the config
   const densityValue = useMemo(() => {
     switch (density) {
       case "low": return 30;
@@ -29,7 +29,6 @@ export function ParticlesBackground({
     }
   }, [density]);
   
-  // Convert speed to a numeric value for the config
   const speedValue = useMemo(() => {
     switch (speed) {
       case "slow": return 1;
@@ -38,13 +37,11 @@ export function ParticlesBackground({
     }
   }, [speed]);
   
-  // Initialize the engine
   const particlesInit = useCallback(async (engine: Engine) => {
     const { loadSlim } = await import("tsparticles-slim");
     await loadSlim(engine);
   }, []);
   
-  // Configure particles based on variant
   const options = useMemo(() => {
     const baseOptions = {
       fullScreen: {
@@ -66,11 +63,11 @@ export function ParticlesBackground({
         move: {
           enable: true,
           speed: speedValue,
-          direction: "none",
+          direction: "none" as const,
           random: true,
           straight: false,
           outModes: {
-            default: "out"
+            default: "out" as const
           }
         },
         number: {
@@ -96,7 +93,7 @@ export function ParticlesBackground({
         }
       },
       interactivity: {
-        detectsOn: "canvas",
+        detectsOn: "canvas" as const,
         events: {
           onClick: {
             enable: interactive,
@@ -216,13 +213,13 @@ export function ParticlesBackground({
               ...baseOptions.particles.move,
               speed: speedValue * 0.8,
               outModes: {
-                default: "bounce"
+                default: "bounce" as const
               }
             }
           }
         };
         
-      default: // default or "particles"
+      default:
         return baseOptions;
     }
   }, [variant, particleColor, linkColor, densityValue, speedValue, interactive]);
